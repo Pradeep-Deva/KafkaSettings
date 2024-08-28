@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "fa52f683-9eb1-4c8f-a26c-1b5aa6f0de75",
+		"name": "KafkaLocal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33046756"
+	},
+	"item": [
+		{
+			"name": "List all connectors",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create connector",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"source-connector-Employee\",\r\n    \"config\": {\r\n        \"name\": \"source-connector-Employee\",\r\n        \"connector.class\": \"io.debezium.connector.sqlserver.SqlServerConnector\",\r\n        \"database.hostname\": \"host.docker.internal\", \r\n        \"database.user\": \"SA\",\r\n        \"database.password\": \"MyPassword123!\",\r\n        \"database.names\": \"KafkaDb\",\r\n        \"topic.prefix\": \"etl\",\r\n        \"table.include.list\": \"dbo.Employees\",\r\n        \"snapshot.mode\": \"initial\",\r\n        \"schema.history.internal.kafka.topic\": \"dbHistory.dbo.Employees\",\r\n        \"schema.history.internal.kafka.bootstrap.servers\": \"redpanda:29092\",\r\n        \"value.converter\": \"io.confluent.connect.avro.AvroConverter\",\r\n        \"value.converter.schema.registry.url\": \"http://redpanda:8081\",\r\n        \"key.converter\": \"io.confluent.connect.avro.AvroConverter\",\r\n        \"key.converter.schema.registry.url\": \"http://redpanda:8081\",\r\n        \"database.encrypt\": \"false\"\r\n    }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Connector status with connector name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/connectors/source-connector-vessels/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors",
+						"source-connector-vessels",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Connector pointed to which topic",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/connectors/source-connector-vessels/topics",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors",
+						"source-connector-vessels",
+						"topics"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All connector with status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8083/connectors?expand=status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					],
+					"query": [
+						{
+							"key": "expand",
+							"value": "status"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Sync Connector",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"sink-connector-EmployeesDest\",\r\n    \"config\": {\r\n        \"name\": \"sink-connector-EmployeesDest\",\r\n        \"connector.class\": \"io.confluent.connect.jdbc.JdbcSinkConnector\",\r\n        \"connection.url\": \"jdbc:sqlserver://host.docker.internal;databaseName=KafkaDb\",\r\n        \"connection.user\": \"SA\",\r\n        \"connection.password\": \"MyPassword123!\",\r\n        \"insert.mode\": \"upsert\",\r\n        \"pk.fields\": \"EmployeeID\",\r\n        \"pk.mode\": \"record_key\",\r\n        \"topics\": \"etl.KafkaDb.dbo.Employees\",\r\n        \"table.name.format\": \"EmployeesDest\",\r\n        \"auto.create\": \"true\",\r\n        \"value.converter\": \"io.confluent.connect.avro.AvroConverter\",\r\n        \"value.converter.schema.registry.url\": \"http://redpanda:8081\",\r\n        \"key.converter\": \"io.confluent.connect.avro.AvroConverter\",\r\n        \"key.converter.schema.registry.url\": \"http://redpanda:8081\",\r\n        \"transforms\": \"unwrap\",\r\n        \"transforms.unwrap.type\": \"io.debezium.transforms.ExtractNewRecordState\",\r\n        \"transforms.unwrap.drop.tombstones\": \"false\",\r\n        \"transforms.unwrap.delete.handling.mode\": \"none\",\r\n        \"delete.enabled\": \"true\"\r\n    }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8083/connectors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
